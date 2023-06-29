@@ -34,7 +34,7 @@ SOURCE_FILES1 += $(shell ls -1 src/*.cxx)
 
 INCLUDE1=-I./src
 INCLUDE2=-I. -I./inc 
-INCLUDE3=-I$(FASTJET)/include -I$(PROMC)/src 
+INCLUDE3=-I$(FASTJET)/include
 INCLUDE4=-I$(HEPMC)/include
 INCLUDE5=-I$(PYTHIADIR)/include
 
