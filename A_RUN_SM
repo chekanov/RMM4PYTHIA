@@ -9,7 +9,7 @@ make mydict
 make 
 
 # total number of events
-TotalEvents=1000000
+TotalEvents=1000
 
 # if -1, use CPU seed
 UseSeed=-1
