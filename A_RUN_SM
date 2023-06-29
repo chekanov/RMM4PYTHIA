@@ -2,11 +2,14 @@
 # compile and run 
 CURRENT_DIR=`pwd`
 source ./setup.sh
+
+
+# compile 
 make mydict
 make 
 
 # total number of events
-TotalEvents=10000
+TotalEvents=1000
 
 # if -1, use CPU seed
 UseSeed=-1
