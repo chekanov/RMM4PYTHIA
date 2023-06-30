@@ -254,10 +254,10 @@ int main(int argc, char* argv[]) {
         m_tree->Branch("run",   &m_run);
         m_tree->Branch("event", &m_event);
 
-        double mass_jj, mass_jb, mass_bb;
+        Double32_t mass_jj, mass_jb, mass_bb;
         m_tree->Branch("mass_jj",   &mass_jj);
-        m_tree->Branch("mass_jb",   &mass_jb);
-        m_tree->Branch("mass_bb",   &mass_bb);
+        //m_tree->Branch("mass_jb",   &mass_jb);
+        //m_tree->Branch("mass_bb",   &mass_bb);
 
         std::vector<string> Names1;
         Names1.push_back(names[0]);
@@ -838,11 +838,8 @@ print ranges
      }
 
 
-
                       // Build RMM 
                       float** projArray =  projectevent(CMenergy, maxNumber, maxTypes, missing, jets, bjets, muons, electrons, photons);
-
-
 
                         // triangular matrix is a special kind of square matrix.
                         // upper triangular matrix or right triangular matrix.
