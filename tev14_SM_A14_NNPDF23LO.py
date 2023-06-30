@@ -35,7 +35,7 @@ ColourReconnection:range=1.71
 #
 HardQCD:all = on
 # 
-PhaseSpace:pTHatMin = 120      # min pT
+PhaseSpace:pTHatMin = 125      # min pT
 PhaseSpace:pTHatMax = 10000   # max pT
 PhaseSpace:mHatMin = 250       # min mHat
 PhaseSpace:mHatMax = 20000    # max mHat
