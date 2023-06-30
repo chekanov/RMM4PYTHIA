@@ -31,7 +31,7 @@ using namespace Pythia8;
 using namespace fastjet;
 
 // project event
-unique_ptr<float[]> projectevent(const float  CMS, const int maxN, const int maxNumberTypes,
+float**  projectevent(const float  CMS, const int maxN, const int maxNumberTypes,
                       const vector<LParticle> missing,
                       const vector<LParticle> jets,
                       const vector<LParticle> bjets,
@@ -769,7 +769,7 @@ print ranges
 
 
 
-                      unique_ptr<float[]> projArray =  projectevent(CMenergy, maxNumber, maxTypes, missing, jets, bjets, muons, electrons, photons);
+                      float** projArray =  projectevent(CMenergy, maxNumber, maxTypes, missing, jets, bjets, muons, electrons, photons);
 
 
 
@@ -786,12 +786,12 @@ print ranges
                                         cout << h << " ";
                                         for (int w = 0; w < mSize; w++)
                                         {
-                                                if (h != w) printf("%.2e ", float(projArray[h * mSize + w]));
+                                                if (h != w) printf("%.2e ", float(projArray[h][w]));
                                                 else  {
-                                                        //cout << std::setprecision(1) << std::scientific <<  float(projArray[h * mSize + w]);
-                                                        //printf("%.2e ", float(projArray[h * mSize + w]));
-                                                        cout << RED; printf("%.2e ", float(projArray[h * mSize + w])); cout << RESET;
-                                                        // else printf("\033[1;31%.2e033[0m", float(projArray[h * mSize + w]));
+                                                        //cout << std::setprecision(1) << std::scientific <<  float(projArray[h][w]);
+                                                        //printf("%.2e ", float(projArray[h][w]));
+                                                        cout << RED; printf("%.2e ", float(projArray[h][w])); cout << RESET;
+                                                        // else printf("\033[1;31%.2e033[0m", float(projArray[h][w]));
                                                 }
 
                                         }
@@ -804,7 +804,7 @@ print ranges
    int non_empty=0;
    for (int w1 = 0; w1 < mSize; w1++) {
           for (int h1 = 0; h1 < mSize; h1++) {
-                  float dd=projArray[w1 * mSize + h1];
+                  float dd=projArray[w1][h1];
                   if (h1<w1)   dd=dd*angNorm; // decrease angles by 0.15 
                   int i1=h1;
                   int i2=mSize-w1-1;
@@ -822,8 +822,8 @@ print ranges
 
             m_tree->Fill();
 
-            //for (int w1 = 0; w1 < mSize; w1++)  delete[] projArray[w1];
-            //delete[] projArray;
+            for (int w1 = 0; w1 < mSize; w1++)  delete[] projArray[w1];
+            delete[] projArray;
 
 
 // ------------------------------------------------------------------

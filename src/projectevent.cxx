@@ -12,8 +12,6 @@ using namespace std;
 #include "CParticle.h"
 #include <string>
 #include <vector>
-#include <memory>
-
 
 /*
 
@@ -108,7 +106,7 @@ float getMT(const TLorentzVector met, const TLorentzVector jet){
 // create matrix with event projection
 // maxN max number of particles of a given type
 // maxNumberTypes total number of types
-unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxNumberTypes, 
+float**  projectevent(const float CMS, const int maxN, const int maxNumberTypes, 
                       const vector<LParticle> missing,   
                       const vector<LParticle> jets, 
                       const vector<LParticle> bjets,
@@ -132,18 +130,13 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
             const int height=maxSize;
             const int width=maxSize;
 
-            //float** outMatrix = 0;
-            //outMatrix = new float*[height];
-            //for (int h=0; h<height; h++) outMatrix[h] = new float[width]; 
-            //vector<vector<unique_ptr<float>>> outMatrix = make_unique<vector<unique_ptr<float>>>(height);
-            //for (int h=0; h<height; h++) outMatrix[h] = make_unique<float>(width);
-            unique_ptr<float[]> outMatrix(new float[height * width]());
-
-
+            float** outMatrix = 0;
+            outMatrix = new float*[height];
+            for (int h=0; h<height; h++) outMatrix[h] = new float[width]; 
 
             unsigned  int INCR=0;         
-            //for(int i=0; i<maxSize; i++)
-            //     for(int j=0; j<maxSize; j++)  outMatrix[i][j]=0;
+            for(int i=0; i<maxSize; i++)
+                 for(int j=0; j<maxSize; j++)  outMatrix[i][j]=0;
 
 
                   // invariant masses of same objects 
@@ -151,8 +144,7 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                   int ii=0;
                   LParticle MET=(LParticle)missing.at(ii);
                   TLorentzVector LMET=MET.GetP();
-                  //outMatrix[ii+INCR*maxNumber][ii+INCR*maxNumber]=LMET.Et()/CMS;
-                  outMatrix[(ii+INCR*maxNumber) * maxSize + (ii+INCR*maxNumber)]=LMET.Et()/CMS;
+                  outMatrix[ii+INCR*maxNumber][ii+INCR*maxNumber]=LMET.Et()/CMS;
 
 
                   INCR=0; 
@@ -162,24 +154,24 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                   for (unsigned int k1 = 0; k1<mJets; k1++) {
                     LParticle LPP1=(LParticle)jets.at(k1);
                     TLorentzVector LP1=LPP1.GetP();
-                    if (LMET.Et()>0) outMatrix[0 * maxSize + (k1+INCR*maxNumber+1)]=getMT(LMET, LP1)/CMS;
-                    outMatrix[(k1+INCR*maxNumber+1 ) * maxSize + 0]=getHL(LP1);
+                    if (LMET.Et()>0) outMatrix[0][k1+INCR*maxNumber+1]=getMT(LMET, LP1)/CMS;
+                    outMatrix[k1+INCR*maxNumber+1][0]=getHL(LP1);
 
                     if (k1 == 0) {
-                        outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=LP1.Et()/CMS;
+                        outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=LP1.Et()/CMS;
                     } else if (k1>0)  {
                           LParticle LPP3=(LParticle)jets.at(k1-1);
                           TLorentzVector LP3=LPP3.GetP();
                           float imbalance=(LP3.Et() - LP1.Et())/(LP3.Et() + LP1.Et()); 
-                          outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=imbalance;
+                          outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=imbalance;
                     }
                    
                     //  non-diagonal 
                     for (unsigned int k2 = 0; k2<mJets; k2++) {
                      LParticle LPP2=(LParticle)jets.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
-                     if (k1<k2)    outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);
-                     if (k1>k2)    outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getAngle(CMS,LP1,LP2);
+                     if (k1<k2)    outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);
+                     if (k1>k2)    outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getAngle(CMS,LP1,LP2);
                     }
                   }
                  }
@@ -194,24 +186,24 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                   for (unsigned int k1 = 0; k1<mJetsB; k1++) {
                     LParticle LPP1=(LParticle)bjets.at(k1);
                     TLorentzVector LP1=LPP1.GetP();
-                    if (LMET.Et()>0) outMatrix[0 * maxSize + (k1+INCR*maxNumber+1)]=getMT(LMET, LP1)/CMS;
-                    outMatrix[(k1+INCR*maxNumber+1 ) * maxSize + 0]=getHL(LP1);
+                    if (LMET.Et()>0) outMatrix[0][k1+INCR*maxNumber+1]=getMT(LMET, LP1)/CMS;
+                    outMatrix[k1+INCR*maxNumber+1][0]=getHL(LP1);
 
                     if (k1 == 0) {
-                        outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=LP1.Et()/CMS;
+                        outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=LP1.Et()/CMS;
                     } else if (k1>0)  {
                           LParticle LPP3=(LParticle)bjets.at(k1-1);
                           TLorentzVector LP3=LPP3.GetP();
                           float imbalance=(LP3.Et() - LP1.Et())/(LP3.Et() + LP1.Et());
-                          outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=imbalance;
+                          outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=imbalance;
                     }
 
                     //  non-diagonal 
                     for (unsigned int k2 = 0; k2<mJetsB; k2++) {
                      LParticle LPP2=(LParticle)bjets.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
-                     if (k1<k2)    outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);
-                     if (k1>k2)    outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getAngle(CMS,LP1,LP2);
+                     if (k1<k2)    outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);
+                     if (k1>k2)    outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getAngle(CMS,LP1,LP2);
                     }
                   }
                  }
@@ -225,24 +217,24 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                   for (unsigned int k1 = 0; k1<mMuons; k1++) {
                     LParticle LPP1=(LParticle)muons.at(k1);
                     TLorentzVector LP1=LPP1.GetP();
-                    if (LMET.Et()>0) outMatrix[0 * maxSize + (k1+INCR*maxNumber+1)]=getMT(LMET, LP1)/CMS; 
-                    outMatrix[(k1+INCR*maxNumber+1) * maxSize + 0]=getHL(LP1);
+                    if (LMET.Et()>0) outMatrix[0][k1+INCR*maxNumber+1]=getMT(LMET, LP1)/CMS; 
+                    outMatrix[k1+INCR*maxNumber+1][0]=getHL(LP1);
 
                     if (k1 == 0) {
-                        outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=LP1.Et()/CMS;
+                        outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=LP1.Et()/CMS;
                     } else if (k1>0)  {
                           LParticle LPP3=(LParticle)muons.at(k1-1);
                           TLorentzVector LP3=LPP3.GetP();
                           float imbalance=(LP3.Et() - LP1.Et())/(LP3.Et() + LP1.Et());
-                          outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=imbalance;
+                          outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=imbalance;
                     }
 
 
                     for (unsigned int k2 = 0; k2<mMuons; k2++) {
                      LParticle LPP2=(LParticle)muons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
-                     if (k1<k2)    outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);
-                     if (k1>k2)    outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getAngle(CMS,LP1,LP2);
+                     if (k1<k2)    outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);
+                     if (k1>k2)    outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getAngle(CMS,LP1,LP2);
                   }}
                  }
 
@@ -254,24 +246,24 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                   for (unsigned int k1 = 0; k1<mEle; k1++) {
                     LParticle LPP1=(LParticle)electrons.at(k1);
                     TLorentzVector LP1=LPP1.GetP();
-                    if (LMET.Et()>0) outMatrix[0 * maxSize + (k1+INCR*maxNumber+1)]=getMT(LMET, LP1)/CMS; 
-                    outMatrix[(k1+INCR*maxNumber+1) * maxSize + 0]=getHL(LP1);
+                    if (LMET.Et()>0) outMatrix[0][k1+INCR*maxNumber+1]=getMT(LMET, LP1)/CMS; 
+                    outMatrix[k1+INCR*maxNumber+1][0]=getHL(LP1);
 
                     if (k1 == 0) {
-                        outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=LP1.Et()/CMS;
+                        outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=LP1.Et()/CMS;
                     } else if (k1>0)  {
                           LParticle LPP3=(LParticle)electrons.at(k1-1);
                           TLorentzVector LP3=LPP3.GetP();
                           float imbalance=(LP3.Et() - LP1.Et())/(LP3.Et() + LP1.Et());
-                          outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=imbalance;
+                          outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=imbalance;
                     }
 
                     // non-diagonal
                     for (unsigned int k2 = 0; k2<mEle; k2++) {
                      LParticle LPP2=(LParticle)electrons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
-                     if (k1<k2)    outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);
-                     if (k1>k2)    outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getAngle(CMS,LP1,LP2);
+                     if (k1<k2)    outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);
+                     if (k1>k2)    outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getAngle(CMS,LP1,LP2);
                   }}
                  }
 
@@ -283,16 +275,16 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                   for (unsigned int k1 = 0; k1<mPho; k1++) {
                     LParticle LPP1=(LParticle)photons.at(k1);
                     TLorentzVector LP1=LPP1.GetP();
-                    if (LMET.Et()>0) outMatrix[0 * maxSize + (k1+INCR*maxNumber+1)]=getMT(LMET, LP1)/CMS; 
-                    outMatrix[(k1+INCR*maxNumber+1) * maxSize + 0]=getHL(LP1);
+                    if (LMET.Et()>0) outMatrix[0][k1+INCR*maxNumber+1]=getMT(LMET, LP1)/CMS; 
+                    outMatrix[k1+INCR*maxNumber+1][0]=getHL(LP1);
 
                     if (k1 == 0) {
-                        outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=LP1.Et()/CMS;
+                        outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=LP1.Et()/CMS;
                     } else if (k1>0)  {
                         LParticle LPP3=(LParticle)photons.at(k1-1);
                         TLorentzVector LP3=LPP3.GetP();
                         float imbalance=(LP3.Et() - LP1.Et())/(LP3.Et() + LP1.Et());
-                        outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k1+INCR*maxNumber+1)]=imbalance;
+                        outMatrix[k1+INCR*maxNumber+1][k1+INCR*maxNumber+1]=imbalance;
                     }
 
 
@@ -300,8 +292,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                     for (unsigned int k2 = 0; k2<mPho; k2++) {
                      LParticle LPP2=(LParticle)photons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
-                     if (k1<k2) outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2); 
-                     if (k1>k2) outMatrix[(k1+INCR*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getAngle(CMS,LP1,LP2); 
+                     if (k1<k2) outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2); 
+                     if (k1>k2) outMatrix[k1+INCR*maxNumber+1][k2+INCR*maxNumber+1]=getAngle(CMS,LP1,LP2); 
                   }}
                  }
 
@@ -319,8 +311,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)bjets.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2);
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2);
                   }
 
                    INCR=2;
@@ -328,8 +320,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)muons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2); 
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2);  
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2); 
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2);  
                   }
 
                   INCR=3;  
@@ -337,8 +329,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)electrons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);  
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2); 
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);  
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2); 
                   }
 
                   INCR=4;
@@ -346,8 +338,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)photons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2); 
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2); 
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2); 
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2); 
                   }
 
                 }
@@ -365,8 +357,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)muons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2);
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2);
                   }
 
                   INCR=3;
@@ -374,8 +366,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)electrons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2);
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2);
                   }
 
                   INCR=4;
@@ -383,8 +375,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)photons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2);
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2);
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2);
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2);
                   }
 
                 }
@@ -404,8 +396,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)electrons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2); 
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2); 
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2); 
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2); 
                   }
 
                   INCR=4;
@@ -413,8 +405,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)photons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2); 
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2); 
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2); 
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2); 
                   }
 
                 }
@@ -430,8 +422,8 @@ unique_ptr<float[]> projectevent(const float CMS, const int maxN, const int maxN
                      LParticle LPP2=(LParticle)photons.at(k2);
                      TLorentzVector LP2=LPP2.GetP();
                      TLorentzVector LPP=LP1+LP2;
-                     outMatrix[(k1+INCR_SHIFT*maxNumber+1) * maxSize + (k2+INCR*maxNumber+1)]=getMass(CMS,LP1,LP2); 
-                     outMatrix[(k2+INCR*maxNumber+1) * maxSize + (k1+INCR_SHIFT*maxNumber+1)]=getAngle(CMS,LP1,LP2); 
+                     outMatrix[k1+INCR_SHIFT*maxNumber+1][k2+INCR*maxNumber+1]=getMass(CMS,LP1,LP2); 
+                     outMatrix[k2+INCR*maxNumber+1][k1+INCR_SHIFT*maxNumber+1]=getAngle(CMS,LP1,LP2); 
                   }
 
                 }
