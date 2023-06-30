@@ -38,7 +38,12 @@ INCLUDE3=-I$(FASTJET)/include
 INCLUDE4=-I$(HEPMC)/include
 INCLUDE5=-I$(PYTHIADIR)/include
 
+# Rui's version
 OPT=-O0 -Wall -Wextra -fsanitize=address -lasan
+
+# Sergei version
+OPT=-O0 -Wall -Wextra
+
 
 # build object files 
 objects1       = $(patsubst %.cxx,%.o,$(SOURCE_FILES1))

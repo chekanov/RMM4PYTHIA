@@ -228,12 +228,8 @@ int main(int argc, char* argv[]) {
         TH2D * h_proj = new TH2D("projection", "projection", mSize, 0, (double)(mSize), mSize, 0, (double)mSize);
         TH1D * h_dimensions = new TH1D("dimensions", "(1)maxNumber,(2)maxTypes, (3)mSize",5,0,5);
         TH1D * h_process = new TH1D("processID", "processID",5000,0,5000);
-        TH1D * h_mjetjet = new TH1D("jetjet_mass", "Mass of 2 lead jets",400,0,7000);
-        TH1D * h_mjetjetb = new TH1D("jetjetb_mass", "Mass of  b+light jet",400,0,7000);
-        TH1D * h_mjetjetbb = new TH1D("jetjetbb_mass", "Mass of two b jets",400,0,7000);
         TH1D * cpucores = new TH1D( "cpucores", "CPU cores", 5, 0, 5);
         cpucores->Fill(1,1);
-
 
 
         h_dimensions->Fill(1,(float)maxNumber);
@@ -322,6 +318,19 @@ print ranges
                                 binsM->SetBinError(  i+1, 0.0);
                                 binsM_tev->SetBinError(  i+1, 0.0);
            }
+
+
+
+// 9 invariant masses
+    TH1D* Mjj=new TH1D( "Mjj", "Jet Jet Mass", nBins-1, xbins);Mjj->Sumw2();
+    TH1D* Mjb=new TH1D( "Mjb", "Jet Bjet Mass", nBins-1, xbins);Mjb->Sumw2();
+    TH1D* Mbb=new TH1D( "Mbb", "BB jet  Mass", nBins-1, xbins);Mbb->Sumw2();
+    TH1D* Mje=new TH1D( "Mje", "jet+e", nBins-1, xbins);Mje->Sumw2();
+    TH1D* Mjm=new TH1D( "Mjm", "jet+m", nBins-1, xbins);Mjm->Sumw2();
+    TH1D* Mjg=new TH1D( "Mjg", "jet+g", nBins-1, xbins);Mjg->Sumw2();
+    TH1D* Mbe=new TH1D( "Mbe", "b+e mass", nBins-1, xbins);Mbe->Sumw2();
+    TH1D* Mbm=new TH1D( "Mbm", "b+m mass", nBins-1, xbins);Mbm->Sumw2();
+    TH1D* Mbg=new TH1D( "Mbg", "b+g mass", nBins-1, xbins);Mbg->Sumw2();
 
 
 	// Begin event loop. Generate event. Skip if error. List first one.
@@ -678,37 +687,6 @@ print ranges
                              h_pt_photon->Fill(L.Perp());
                           }
 
-                        // dijet mass for 2 lead jets
-                        if (jets.size()>1) {
-                                LParticle LPP1=jets.at(0);
-                                TLorentzVector LP1=LPP1.GetP();
-                                LParticle LPP2=jets.at(1);
-                                TLorentzVector LP2=LPP2.GetP();
-                                TLorentzVector LPP=LP1+LP2;
-                                h_mjetjet->Fill(LPP.M());
-                                mass_jj = LPP.M();
-                        }
-
-                       if (bjets.size()>1) {
-                                LParticle LPP1=bjets.at(0);
-                                TLorentzVector LP1=LPP1.GetP();
-                                LParticle LPP2=bjets.at(1);
-                                TLorentzVector LP2=LPP2.GetP();
-                                TLorentzVector LPP=LP1+LP2;
-                                h_mjetjetbb->Fill(LPP.M());
-                                mass_bb = LPP.M();
-                        }
-
-                        if (bjets.size()>0 && jets.size()>0) {
-                                LParticle LPP1=bjets.at(0);
-                                TLorentzVector LP1=LPP1.GetP();
-                                LParticle LPP2=jets.at(0);
-                                TLorentzVector LP2=LPP2.GetP();
-                                TLorentzVector LPP=LP1+LP2;
-                                h_mjetjetb->Fill(LPP.M());
-                                mass_jb = LPP.M();
-                        }
-
 
                         h_jetN->Fill((float)jets.size());
                         h_bjetN->Fill((float)bjets.size());
@@ -763,6 +741,101 @@ print ranges
 
                         };
 
+
+
+     // fill here some masses for debugging
+     // jj
+     for (unsigned int i=0; i< jets.size(); i++){
+        if ( jets.size()>1){
+            LParticle p1= jets.at(0);
+            LParticle p2= jets.at(1);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            mass_jj=PP.M();
+            Mjj->Fill(mass_jj, weight);
+        }
+     }
+
+      // j+b
+     for (unsigned int i=0; i< jets.size(); i++){
+        if ( bjets.size()>0){
+            LParticle p1= jets.at(0);
+            LParticle p2= bjets.at(0);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            mass_jb=PP.M();
+            Mjb->Fill(mass_jb, weight);
+        }
+     }
+
+     // b+b
+     for (unsigned int i=0; i< bjets.size(); i++){
+        if ( bjets.size()>1){
+            LParticle p1= bjets.at(0);
+            LParticle p2= bjets.at(1);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            mass_bb=PP.M(); 
+            Mbb->Fill(mass_bb, weight);
+        }
+     }
+
+     // je
+     for (unsigned int i=0; i< jets.size(); i++){
+        if ( electrons.size()>0){
+            LParticle p1= jets.at(0);
+            LParticle p2= electrons.at(0);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            Mje->Fill(PP.M(), weight);
+        }
+     }
+
+     // jm 
+     for (unsigned int i=0; i< jets.size(); i++){
+        if ( muons.size()>0){
+            LParticle p1= jets.at(0);
+            LParticle p2= muons.at(0);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            Mjm->Fill(PP.M(), weight);
+        }
+     }
+
+     // jg 
+     for (unsigned int i=0; i< jets.size(); i++){
+        if ( photons.size()>0){
+            LParticle p1= jets.at(0);
+            LParticle p2= photons.at(0);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            Mjg->Fill(PP.M(), weight);
+        }
+     }
+
+     // be 
+     for (unsigned int i=0; i< jets.size(); i++){
+        if ( electrons.size()>0){
+            LParticle p1= bjets.at(0);
+            LParticle p2= electrons.at(0);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            Mbe->Fill(PP.M(), weight);
+        }
+     }
+
+     // bm 
+     for (unsigned int i=0; i< bjets.size(); i++){
+        if ( muons.size()>0){
+            LParticle p1= bjets.at(0);
+            LParticle p2= muons.at(0);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            Mbm->Fill(PP.M(), weight);
+        }
+     }
+
+     // bg 
+     for (unsigned int i=0; i< bjets.size(); i++){
+        if ( photons.size()>0){
+            LParticle p1= bjets.at(0);
+            LParticle p2= photons.at(0);
+            TLorentzVector PP=p1.GetP()+p2.GetP();
+            Mbg->Fill(PP.M(), weight);
+        }
+     }
 
 
 
