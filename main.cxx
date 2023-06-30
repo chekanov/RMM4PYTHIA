@@ -808,7 +808,7 @@ print ranges
      }
 
      // be 
-     for (unsigned int i=0; i< jets.size(); i++){
+     for (unsigned int i=0; i< bjets.size(); i++){
         if ( electrons.size()>0){
             LParticle p1= bjets.at(0);
             LParticle p2= electrons.at(0);
