@@ -251,16 +251,17 @@ int main(int argc, char* argv[]) {
         std::vector<UInt_t> m_proj_index2;
         UInt_t m_run;
         Long64_t m_event;
+        m_tree->Branch("id",  &m_id);
         m_tree->Branch("proj",   &m_proj);
         m_tree->Branch("proj_index1",   &m_proj_index1);
         m_tree->Branch("proj_index2",   &m_proj_index2);
         m_tree->Branch("run",   &m_run);
         m_tree->Branch("event", &m_event);
 
-        m_tree->Branch("id",  &m_id);
-        m_tree->Branch("proj",   &m_proj);
-        m_tree->Branch("proj_index1",   &m_proj_index1);
-        m_tree->Branch("proj_index2",   &m_proj_index2);
+        double mass_jj, mass_jb, mass_bb;
+        m_tree->Branch("mass_jj",   &mass_jj);
+        m_tree->Branch("mass_jb",   &mass_jb);
+        m_tree->Branch("mass_bb",   &mass_bb);
 
         std::vector<string> Names1;
         Names1.push_back(names[0]);
@@ -356,11 +357,8 @@ print ranges
                 h_weightsCorse->Fill(weight);
    
 
-		if ( (n<=10) &&
-		          ((n<=100 && (n%10) == 0)) ||
-		          ((n<=1000 && (n%100) == 0))  ||
-		          ((n>=1000 && (n%1000) == 0)) ) {
-			cout << "No events= " << n << " passed"  << endl; };
+		if ( int(Ntot / int(Ntot/10)) == 0) {
+			cout << "Number of events  " << n << " passed"  << endl; };
 
 		vector<PseudoJet> avec;
 		h_debug->Fill("Generated",1.);
@@ -688,6 +686,7 @@ print ranges
                                 TLorentzVector LP2=LPP2.GetP();
                                 TLorentzVector LPP=LP1+LP2;
                                 h_mjetjet->Fill(LPP.M());
+                                mass_jj = LPP.M();
                         }
 
                        if (bjets.size()>1) {
@@ -697,6 +696,7 @@ print ranges
                                 TLorentzVector LP2=LPP2.GetP();
                                 TLorentzVector LPP=LP1+LP2;
                                 h_mjetjetbb->Fill(LPP.M());
+                                mass_bb = LPP.M();
                         }
 
                         if (bjets.size()>0 && jets.size()>0) {
@@ -706,6 +706,7 @@ print ranges
                                 TLorentzVector LP2=LPP2.GetP();
                                 TLorentzVector LPP=LP1+LP2;
                                 h_mjetjetb->Fill(LPP.M());
+                                mass_jb = LPP.M();
                         }
 
 

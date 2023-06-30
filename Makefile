@@ -38,13 +38,14 @@ INCLUDE3=-I$(FASTJET)/include
 INCLUDE4=-I$(HEPMC)/include
 INCLUDE5=-I$(PYTHIADIR)/include
 
+OPT=-O0 -Wall -Wextra -fsanitize=address -lasan
 
 # build object files 
 objects1       = $(patsubst %.cxx,%.o,$(SOURCE_FILES1))
 
 
 %.o: %.cxx
-	$(CXX) $(OPT) $(CXXFLAGS) $(INCLUDE1) $(INCLUDE2) $(INCLUDE3) $(INCLUDE4) $(INCLUDE5) -o $@ -c $<
+	$(CXX) $(OPT) $(CXXFLAGS) $(INCLUDE1) $(INCLUDE2) $(INCLUDE3) $(INCLUDE5) -o $@ -c $<
 
 Tasks:     clean main.exe
 
@@ -62,7 +63,7 @@ mydict: inc/LParticle.h
 LIBOBJS = $(patsubst %.cxx,%.o,$(SOURCE_FILES))
 
 main.exe: $(objects1)
-	$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
+	$(LD) $(OPT) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
 
 clean:
 	        @rm -f *.o *~ main.exe src/*.o ;  echo "Clear.." 
