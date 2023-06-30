@@ -839,6 +839,7 @@ print ranges
 
 
 
+                      // Build RMM 
                       float** projArray =  projectevent(CMenergy, maxNumber, maxTypes, missing, jets, bjets, muons, electrons, photons);
 
 
