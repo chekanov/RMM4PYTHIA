@@ -14,5 +14,7 @@ TotalEvents=1000000
 # if -1, use CPU seed
 UseSeed=-1
 
-./main.exe tev14_SM_A14_NNPDF23LO.py out/out_pythia8_sm14tev.root $TotalEvents $UseSeed
-echo "Add is done for out/out_pythia8_sm14tev.root"
+OUTPUT="out/out_pythia8_sm14tev.root"
+
+./main.exe tev14_SM_A14_NNPDF23LO.py $OUTPUT  $TotalEvents $UseSeed
+echo "Add is done for $OUTPUT"
