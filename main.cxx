@@ -357,11 +357,8 @@ print ranges
                 h_weightsCorse->Fill(weight);
    
 
-		if ( (n<=10) &&
-		          ((n<=100 && (n%10) == 0)) ||
-		          ((n<=1000 && (n%100) == 0))  ||
-		          ((n>=1000 && (n%1000) == 0)) ) {
-			cout << "No events= " << n << " passed"  << endl; };
+		if ( int(Ntot / int(Ntot/10)) == 0) {
+			cout << "Number of events  " << n << " passed"  << endl; };
 
 		vector<PseudoJet> avec;
 		h_debug->Fill("Generated",1.);
