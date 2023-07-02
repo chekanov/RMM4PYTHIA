@@ -241,6 +241,7 @@ int main(int argc, char* argv[]) {
 
         TTree *  m_tree  = new TTree("inputNN","inputNN");
         m_tree->SetAutoFlush(100000);
+        m_tree->SetAutoSave(0);
         UInt_t m_id;
         std::vector<Double32_t> m_proj;
         std::vector<UInt_t> m_proj_index1;
