@@ -746,6 +746,7 @@ print ranges
 
      // fill here some masses for debugging
      // jj
+        mass_jj=0;
         if ( jets.size()>1){
             LParticle p1= jets.at(0);
             LParticle p2= jets.at(1);
