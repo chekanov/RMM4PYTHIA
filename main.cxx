@@ -746,7 +746,6 @@ print ranges
 
      // fill here some masses for debugging
      // jj
-     for (unsigned int i=0; i< jets.size(); i++){
         if ( jets.size()>1){
             LParticle p1= jets.at(0);
             LParticle p2= jets.at(1);
@@ -754,21 +753,17 @@ print ranges
             mass_jj=PP.M();
             Mjj->Fill(mass_jj, weight);
         }
-     }
 
       // j+b
-     for (unsigned int i=0; i< jets.size(); i++){
-        if ( bjets.size()>0){
+        if ( bjets.size()>0 && jets.size()>0){
             LParticle p1= jets.at(0);
             LParticle p2= bjets.at(0);
             TLorentzVector PP=p1.GetP()+p2.GetP();
             mass_jb=PP.M();
             Mjb->Fill(mass_jb, weight);
         }
-     }
 
      // b+b
-     for (unsigned int i=0; i< bjets.size(); i++){
         if ( bjets.size()>1){
             LParticle p1= bjets.at(0);
             LParticle p2= bjets.at(1);
@@ -776,67 +771,54 @@ print ranges
             mass_bb=PP.M(); 
             Mbb->Fill(mass_bb, weight);
         }
-     }
 
      // je
-     for (unsigned int i=0; i< jets.size(); i++){
-        if ( electrons.size()>0){
+        if ( electrons.size()>0 && jets.size()>0){
             LParticle p1= jets.at(0);
             LParticle p2= electrons.at(0);
             TLorentzVector PP=p1.GetP()+p2.GetP();
             Mje->Fill(PP.M(), weight);
         }
-     }
 
      // jm 
-     for (unsigned int i=0; i< jets.size(); i++){
-        if ( muons.size()>0){
+        if ( muons.size()>0 && jets.size()>0){
             LParticle p1= jets.at(0);
             LParticle p2= muons.at(0);
             TLorentzVector PP=p1.GetP()+p2.GetP();
             Mjm->Fill(PP.M(), weight);
         }
-     }
 
      // jg 
-     for (unsigned int i=0; i< jets.size(); i++){
-        if ( photons.size()>0){
+        if ( photons.size()>0 && jets.size()>0){
             LParticle p1= jets.at(0);
             LParticle p2= photons.at(0);
             TLorentzVector PP=p1.GetP()+p2.GetP();
             Mjg->Fill(PP.M(), weight);
         }
-     }
 
      // be 
-     for (unsigned int i=0; i< bjets.size(); i++){
-        if ( electrons.size()>0){
+        if ( electrons.size()>0 && bjets.size()>0){
             LParticle p1= bjets.at(0);
             LParticle p2= electrons.at(0);
             TLorentzVector PP=p1.GetP()+p2.GetP();
             Mbe->Fill(PP.M(), weight);
         }
-     }
 
      // bm 
-     for (unsigned int i=0; i< bjets.size(); i++){
-        if ( muons.size()>0){
+        if ( muons.size()>0 && bjets.size()>0){
             LParticle p1= bjets.at(0);
             LParticle p2= muons.at(0);
             TLorentzVector PP=p1.GetP()+p2.GetP();
             Mbm->Fill(PP.M(), weight);
         }
-     }
 
      // bg 
-     for (unsigned int i=0; i< bjets.size(); i++){
-        if ( photons.size()>0){
+        if ( photons.size()>0 && bjets.size()>0){
             LParticle p1= bjets.at(0);
             LParticle p2= photons.at(0);
             TLorentzVector PP=p1.GetP()+p2.GetP();
             Mbg->Fill(PP.M(), weight);
         }
-     }
 
 
                       // Build RMM 
