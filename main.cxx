@@ -255,8 +255,9 @@ int main(int argc, char* argv[]) {
         m_tree->Branch("run",   &m_run);
         m_tree->Branch("event", &m_event);
 
-        Double32_t mass_jj, mass_jb, mass_bb;
+        Double32_t mass_jj, ystar;
         m_tree->Branch("mass_jj",   &mass_jj);
+        m_tree->Branch("ystar",   &ystar);
         //m_tree->Branch("mass_jb",   &mass_jb);
         //m_tree->Branch("mass_bb",   &mass_bb);
 
@@ -751,6 +752,7 @@ print ranges
      // fill here some masses for debugging
      // jj
         mass_jj=0;
+        ystar=0;
         if ( jets.size()>1){
             LParticle p1= jets.at(0);
             LParticle p2= jets.at(1);
@@ -759,7 +761,7 @@ print ranges
             TLorentzVector PP=LP1+LP2;
             mass_jj=PP.M();
             Mjj->Fill(mass_jj, weight);
-            double ystar=abs(LP1.Rapidity()-LP2.Rapidity())/2.0;
+            ystar=abs(LP1.Rapidity()-LP2.Rapidity())/2.0;
             if (ystar<0.6) MjjYStar->Fill(mass_jj, weight); 
             Ystar->Fill(ystar); 
         }
