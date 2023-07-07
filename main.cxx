@@ -255,7 +255,7 @@ int main(int argc, char* argv[]) {
         m_tree->Branch("run",   &m_run);
         m_tree->Branch("event", &m_event);
 
-        Double32_t mass_jj, ystar;
+        Double32_t mass_jj, ystar, mass_jb, mass_bb;
         m_tree->Branch("mass_jj",   &mass_jj);
         m_tree->Branch("ystar",   &ystar);
         //m_tree->Branch("mass_jb",   &mass_jb);
