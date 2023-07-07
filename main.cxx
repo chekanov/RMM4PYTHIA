@@ -333,6 +333,10 @@ print ranges
     TH1D* Mbm=new TH1D( "Mbm", "b+m mass", nBins-1, xbins);Mbm->Sumw2();
     TH1D* Mbg=new TH1D( "Mbg", "b+g mass", nBins-1, xbins);Mbg->Sumw2();
 
+// Ystar
+   TH1D* MjjYStar=new TH1D( "MjjYStar", "Jet Jet Mass with yStar less 0.6", nBins-1, xbins);Mjj->Sumw2();
+   TH1D* Ystar=new TH1D( "Ystar", "Ystar", 100, 0.0, 10.0); Ystar->Sumw2();
+
 
 	// Begin event loop. Generate event. Skip if error. List first one.
 	for (int n = 0; n < Ntot; n++) {
@@ -750,9 +754,14 @@ print ranges
         if ( jets.size()>1){
             LParticle p1= jets.at(0);
             LParticle p2= jets.at(1);
-            TLorentzVector PP=p1.GetP()+p2.GetP();
+            TLorentzVector LP1=p1.GetP();
+            TLorentzVector LP2=p2.GetP();
+            TLorentzVector PP=LP1+LP2;
             mass_jj=PP.M();
             Mjj->Fill(mass_jj, weight);
+            double ystar=abs(LP1.Rapidity()-LP2.Rapidity())/2.0;
+            if (ystar<0.6) MjjYStar->Fill(mass_jj, weight); 
+            Ystar->Fill(ystar); 
         }
 
       // j+b
